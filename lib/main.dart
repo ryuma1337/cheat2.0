@@ -3,6 +3,7 @@ import 'config_model.dart';
 import 'config_service.dart';
 import 'pages/dynamic_page.dart';
 import 'pages/logs_page.dart';
+import 'pages/server_settings_page.dart';
 
 void main() => runApp(const RyumaApp());
 
@@ -74,6 +75,8 @@ class HomePage extends StatelessWidget {
   void _open(BuildContext context, MenuItem item) {
     if (item.type == 'logs') {
       Navigator.push(context, MaterialPageRoute(builder: (_) => const LogsPage()));
+    } else if (item.id == 'settings') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const ServerSettingsPage()));
     } else {
       Navigator.push(context, MaterialPageRoute(
         builder: (_) => DynamicPage(title: item.title, content: item.content ?? ''),

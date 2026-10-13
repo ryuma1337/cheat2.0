@@ -26,7 +26,7 @@ class _LogsPageState extends State<LogsPage> {
       final data = await Api.fetchLogs();
       setState(() { logs = data; loading = false; });
     } catch (e) {
-      setState(() { error = e.toString(); loading = false; });
+      setState(() { error = "sunucuya baglanilamadi"; loading = false; });
     }
   }
 
@@ -48,7 +48,20 @@ class _LogsPageState extends State<LogsPage> {
           : error != null
               ? Center(child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text("hata: $error", style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.cloud_off, color: Colors.grey, size: 48),
+                      const SizedBox(height: 12),
+                      Text(error!, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE53935)),
+                        onPressed: load,
+                        child: const Text("TEKRAR DENE"),
+                      ),
+                    ],
+                  ),
                 ))
               : logs.isEmpty
                   ? const Center(child: Text("henuz log yok"))
