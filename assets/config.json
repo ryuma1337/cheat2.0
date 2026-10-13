@@ -1,0 +1,14 @@
+{
+  "app_name": "Ryuma Cheating",
+  "theme": {
+    "primary": "#E53935",
+    "background": "#0A0A0A",
+    "card": "#141414"
+  },
+  "menu": [
+    {"id": "logs", "title": "Loglar", "icon": "list", "type": "logs", "subtitle": "gelen loglar"},
+    {"id": "profile", "title": "Profil", "icon": "person", "type": "page", "subtitle": "hesap bilgileri", "content": "Profil sayfası.\n\nDaha fazla özellik yakında."},
+    {"id": "settings", "title": "Ayarlar", "icon": "settings", "type": "page", "subtitle": "uygulama ayarları", "content": "Ayarlar sayfası.\n\nDaha fazla özellik yakında."},
+    {"id": "about", "title": "Hakkında", "icon": "info", "type": "page", "subtitle": "versiyon 1.0", "content": "Ryuma Cheating\n\nVersiyon 1.0.0\n\nHe tarafından yapıldı."}
+  ]
+}

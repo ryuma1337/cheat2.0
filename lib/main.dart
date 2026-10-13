@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'api.dart';
-import 'log_model.dart';
+import 'config_model.dart';
+import 'config_service.dart';
+import 'pages/dynamic_page.dart';
+import 'pages/logs_page.dart';
 
 void main() => runApp(const RyumaApp());
 
@@ -16,41 +17,67 @@ class RyumaApp extends StatelessWidget {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF0A0A0A),
         primaryColor: const Color(0xFFE53935),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF111111),
-          foregroundColor: Color(0xFFE53935),
-          elevation: 0,
-        ),
       ),
-      home: const LogsPage(),
+      home: const BootPage(),
     );
   }
 }
 
-class LogsPage extends StatefulWidget {
-  const LogsPage({super.key});
+class BootPage extends StatefulWidget {
+  const BootPage({super.key});
   @override
-  State<LogsPage> createState() => _LogsPageState();
+  State<BootPage> createState() => _BootPageState();
 }
 
-class _LogsPageState extends State<LogsPage> {
-  List<LogEntry> logs = [];
-  bool loading = true;
-  String? error;
+class _BootPageState extends State<BootPage> {
+  AppConfig? config;
 
   @override
   void initState() {
     super.initState();
-    load();
+    _load();
   }
 
-  Future<void> load() async {
-    setState(() { loading = true; error = null; });
-    try {
-      final data = await Api.fetchLogs();
-      setState(() { logs = data; loading = false; });
-    } catch (e) {
-      setState(() { error = e.toString(); loading = false; });
+  Future<void> _load() async {
+    final c = await ConfigService.load();
+    setState(() { config = c; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (config == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0A0A0A),
+        body: Center(child: CircularProgressIndicator(color: Color(0xFFE53935))),
+      );
+    }
+    return HomePage(config: config!);
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final AppConfig config;
+  const HomePage({super.key, required this.config});
+
+  IconData _iconFor(String name) {
+    switch (name) {
+      case 'list': return Icons.list;
+      case 'person': return Icons.person;
+      case 'settings': return Icons.settings;
+      case 'info': return Icons.info;
+      case 'home': return Icons.home;
+      case 'star': return Icons.star;
+      default: return Icons.circle;
+    }
+  }
+
+  void _open(BuildContext context, MenuItem item) {
+    if (item.type == 'logs') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const LogsPage()));
+    } else {
+      Navigator.push(context, MaterialPageRoute(
+        builder: (_) => DynamicPage(title: item.title, content: item.content ?? ''),
+      ));
     }
   }
 
@@ -58,85 +85,52 @@ class _LogsPageState extends State<LogsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("RYUMA CHEATING", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2)),
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: load),
-        ],
+        backgroundColor: const Color(0xFF111111),
+        foregroundColor: const Color(0xFFE53935),
+        elevation: 0,
+        title: Text(config.appName.toUpperCase(),
+            style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2)),
       ),
-      body: loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE53935)))
-          : error != null
-              ? Center(child: Text("hata: $error", style: const TextStyle(color: Colors.red)))
-              : logs.isEmpty
-                  ? const Center(child: Text("henüz log yok"))
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: logs.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (_, i) => LogCard(logs[i]),
-                    ),
-    );
-  }
-}
-
-class LogCard extends StatelessWidget {
-  final LogEntry log;
-  const LogCard(this.log, {super.key});
-
-  String _formatTime(String ts) {
-    try {
-      final dt = DateTime.parse(ts);
-      return DateFormat('dd/MM/yyyy HH:mm:ss').format(dt);
-    } catch (_) { return ts; }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE53935).withOpacity(0.3)),
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.person, color: Color(0xFFE53935), size: 18),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(log.ip, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: config.menu.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, i) {
+          final item = config.menu[i];
+          return InkWell(
+            onTap: () => _open(context, item),
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF141414),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE53935).withOpacity(0.3)),
               ),
-              Text(_formatTime(log.timestamp), style: const TextStyle(color: Colors.grey, fontSize: 11)),
-            ],
-          ),
-          const Divider(color: Colors.white12, height: 16),
-          _row("platform", log.platform),
-          _row("lang", log.language),
-          _row("screen", log.screen),
-          _row("tz", log.timezone),
-          if (log.latitude != null && log.longitude != null)
-            _row("konum", "${log.latitude}, ${log.longitude}"),
-          const SizedBox(height: 6),
-          Text(log.userAgent,
-              style: const TextStyle(color: Colors.grey, fontSize: 11),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis),
-        ],
-      ),
-    );
-  }
-
-  Widget _row(String k, String v) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(width: 70, child: Text(k, style: const TextStyle(color: Colors.grey, fontSize: 12))),
-          Expanded(child: Text(v, style: const TextStyle(fontSize: 12))),
-        ],
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                children: [
+                  Icon(_iconFor(item.icon), color: const Color(0xFFE53935), size: 26),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        if (item.subtitle.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(item.subtitle,
+                                style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: Colors.grey),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
