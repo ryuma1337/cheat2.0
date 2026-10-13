@@ -13,7 +13,6 @@ class ConfigService {
         return AppConfig.fromJson(jsonDecode(res.body));
       }
     } catch (_) {}
-
     try {
       final raw = await rootBundle.loadString('assets/config.json');
       return AppConfig.fromJson(jsonDecode(raw));
