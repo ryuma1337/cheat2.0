@@ -7,8 +7,8 @@
   },
   "menu": [
     {"id": "logs", "title": "Loglar", "icon": "list", "type": "logs", "subtitle": "gelen loglar"},
-    {"id": "profile", "title": "Profil", "icon": "person", "type": "page", "subtitle": "hesap bilgileri", "content": "Profil sayfası.\n\nDaha fazla özellik yakında."},
-    {"id": "settings", "title": "Ayarlar", "icon": "settings", "type": "page", "subtitle": "uygulama ayarları", "content": "Ayarlar sayfası.\n\nDaha fazla özellik yakında."},
-    {"id": "about", "title": "Hakkında", "icon": "info", "type": "page", "subtitle": "versiyon 1.0", "content": "Ryuma Cheating\n\nVersiyon 1.0.0\n\nHe tarafından yapıldı."}
+    {"id": "profile", "title": "Profil", "icon": "person", "type": "page", "subtitle": "hesap bilgileri", "content": "Profil sayfasi.\n\nDaha fazla ozellik yakinda."},
+    {"id": "settings", "title": "Ayarlar", "icon": "settings", "type": "page", "subtitle": "uygulama ayarlari", "content": "Ayarlar sayfasi.\n\nDaha fazla ozellik yakinda."},
+    {"id": "about", "title": "Hakkinda", "icon": "info", "type": "page", "subtitle": "versiyon 1.0", "content": "Ryuma Cheating\n\nVersiyon 1.0.0\n\nHe tarafindan yapildi."}
   ]
 }

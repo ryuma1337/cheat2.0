@@ -51,7 +51,7 @@ class _LogsPageState extends State<LogsPage> {
                   child: Text("hata: $error", style: const TextStyle(color: Colors.red, fontSize: 12)),
                 ))
               : logs.isEmpty
-                  ? const Center(child: Text("henüz log yok"))
+                  ? const Center(child: Text("henuz log yok"))
                   : ListView.separated(
                       padding: const EdgeInsets.all(12),
                       itemCount: logs.length,
