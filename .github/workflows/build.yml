@@ -23,6 +23,12 @@ jobs:
 
       - run: flutter create --platforms=android --project-name ryuma_cheating .
 
+      - run: flutter pub add --dev flutter_launcher_icons
+
+      - run: flutter pub run flutter_launcher_icons
+
+      - run: sed -i 's/android:label="ryuma_cheating"/android:label="Ryuma Cheating"/' android/app/src/main/AndroidManifest.xml
+
       - run: flutter pub get
 
       - run: flutter build apk --release

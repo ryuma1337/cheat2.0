@@ -12,3 +12,10 @@ dependencies:
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#0a0a0a"
+  adaptive_icon_foreground: "assets/icon.png"
